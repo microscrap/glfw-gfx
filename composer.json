@@ -1,0 +1,50 @@
+{
+    "name": "microscrap/glfw-gfx",
+    "description": "GLFW-native Rendering Package for the ScrapyardIO Framework",
+    "license": "MIT",
+    "homepage": "https://scrapyard-io.projectsaturnstudios.com",
+    "version": "0.5.1",
+    "authors": [
+        {
+            "name": "Angel Gonzalez",
+            "email": "angel@projectsaturnstudios.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "ext-glfw": "^0.5.0",
+        "fabricate/gfx": "^0.5.0",
+        "microscrap/glfw": "^0.5.0",
+        "fabricate/contracts": "^0.5.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Microscrap\\GFX\\GLFW\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DeptOfScrapyardRobotics\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "scrapyard-io": {
+            "providers": [
+                "Microscrap\\GFX\\GLFW\\Providers\\GLFWGfxServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-master": "0.5.x-dev"
+        }
+    }
+}
