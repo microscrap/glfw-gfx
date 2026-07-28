@@ -3,7 +3,7 @@
     "description": "GLFW-native Rendering Package for the ScrapyardIO Framework",
     "license": "MIT",
     "homepage": "https://scrapyard-io.projectsaturnstudios.com",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "authors": [
         {
             "name": "Angel Gonzalez",
@@ -13,9 +13,11 @@
     "require": {
         "php": "^8.3",
         "ext-glfw": "^0.5.0",
-        "fabricate/gfx": "^0.5.0",
+        "fabricate/framebuffers": "^0.6.0",
+        "fabricate/nuts-and-bolts": "^0.6.0",
+        "fabricate/rendering": "^0.6.0",
         "microscrap/glfw": "^0.5.0",
-        "fabricate/contracts": "^0.5.0"
+        "fabricate/contracts": "^0.6.0"
     },
     "require-dev": {
         "pestphp/pest": "^4"
@@ -44,7 +46,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "0.5.x-dev"
+            "dev-master": "0.6.x-dev"
         }
     }
 }

@@ -3,9 +3,11 @@
 namespace Microscrap\GFX\GLFW\Providers;
 
 use Fabricate\Contracts\Chassis\BindingResolutionException;
-use Fabricate\Contracts\Framebuffers\Factory as FramebufferFactory;
-use Fabricate\Contracts\Framebuffers\FormatSpec;
+use Fabricate\Contracts\Framebuffers\BufferFactory as FramebufferFactory;
+use Fabricate\Framebuffers\FormatSpec;
 use Fabricate\NutsAndBolts\ServiceProvider;
+use Fabricate\Rendering\RenderManager;
+use Microscrap\GFX\GLFW\GLFWRenderDriver;
 use Microscrap\GFX\GLFW\GLFWOpenGLFramebuffer;
 
 /**
@@ -35,6 +37,10 @@ class GLFWGfxServiceProvider extends ServiceProvider
                     $height,
                 )
             );
+        });
+
+        $this->callAfterResolving('gfx', function (RenderManager $renderers) {
+            $renderers->extend('glfw', fn () => new GLFWRenderDriver);
         });
     }
 }

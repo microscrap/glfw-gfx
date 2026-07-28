@@ -2,9 +2,9 @@
 
 namespace Microscrap\GFX\GLFW;
 
-use Fabricate\Contracts\Gfx\RendererException;
+use Fabricate\Contracts\Rendering\RenderingException;
 
-class GlfwGfxException extends RendererException
+class GlfwGfxException extends RenderingException
 {
     public static function extensionMissing(): static
     {
@@ -14,5 +14,10 @@ class GlfwGfxException extends RendererException
     public static function packageMissing(): static
     {
         return new static('The GLFW rendering engine requires microscrap/glfw. Install it with composer require microscrap/glfw');
+    }
+
+    public static function unsupportedFramebuffer(string $class): static
+    {
+        return new static("GLFW rendering requires a ".GLFWOpenGLFramebuffer::class."; {$class} given.");
     }
 }

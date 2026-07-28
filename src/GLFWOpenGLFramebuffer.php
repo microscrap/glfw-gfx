@@ -2,20 +2,22 @@
 
 namespace Microscrap\GFX\GLFW;
 
-use Fabricate\Contracts\Framebuffers\DumpedBuffer;
+use Fabricate\Contracts\Displays\Display;
 use Fabricate\Contracts\Framebuffers\Enums\BitDepth;
 use Fabricate\Contracts\Framebuffers\Enums\Endianness;
 use Fabricate\Contracts\Framebuffers\Enums\PixelFormat;
 use Fabricate\Contracts\Framebuffers\Enums\RenderType;
-use Fabricate\Contracts\Framebuffers\FormatSpec;
 use Fabricate\Contracts\Framebuffers\Framebuffer;
+use Fabricate\Contracts\Rendering\GFXRenderer;
+use Fabricate\Framebuffers\DataObjects\DumpedBuffer;
+use Fabricate\Framebuffers\FormatSpec;
+use Fabricate\NutsAndBolts\Concerns\Splices16Bits;
 use Fabricate\Framebuffers\PixelGrid;
 use Microscrap\Bindings\GLFW\DataObjects\GlfwWindow;
 use Microscrap\Bindings\GLFW\Enums\ClearBufferMask;
 use Microscrap\Bindings\GLFW\Enums\EnableCap;
 use Microscrap\Bindings\GLFW\Enums\TrueFalse;
 use Microscrap\Bindings\GLFW\Enums\WindowHint;
-use ScrapyardIO\NutsAndBolts\Concerns\Splices16Bits;
 
 /**
  * OpenGL-backed framebuffer for the GLFW window stack (strategy: glfw-ogl).
@@ -273,6 +275,21 @@ class GLFWOpenGLFramebuffer implements Framebuffer
                 height: $this->height,
             ),
         ];
+    }
+
+    public function flush(): array
+    {
+        return $this->dump();
+    }
+
+    public function supportsDisplay(Display $display): bool
+    {
+        return true;
+    }
+
+    public function supportsRenderer(GFXRenderer $renderer): bool
+    {
+        return $renderer instanceof GLFWGfx;
     }
 
     protected function bindContext(): void

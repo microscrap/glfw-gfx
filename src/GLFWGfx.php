@@ -2,14 +2,15 @@
 
 namespace Microscrap\GFX\GLFW;
 
-use Fabricate\Contracts\Framebuffers\FormatSpec;
 use Fabricate\Contracts\Framebuffers\Framebuffer;
-use Fabricate\Contracts\Gfx\RendererException;
-use Fabricate\Gfx\Renderer2D;
+use Fabricate\Contracts\Rendering\RenderingException;
+use Fabricate\Framebuffers\FormatSpec;
+use Fabricate\NutsAndBolts\Concerns\Splices16Bits;
+use Fabricate\Rendering\Concerns\GFXText;
+use Fabricate\Rendering\Renderer2D;
 use Microscrap\Bindings\GLFW\DataObjects\GlfwWindow;
 use Microscrap\Bindings\GLFW\Enums\ClearBufferMask;
 use Microscrap\Bindings\GLFW\Enums\EnableCap;
-use ScrapyardIO\NutsAndBolts\Concerns\Splices16Bits;
 
 /**
  * GLFW/OpenGL renderer. Window context is owned by GLFWWindow.
@@ -21,6 +22,7 @@ use ScrapyardIO\NutsAndBolts\Concerns\Splices16Bits;
  */
 class GLFWGfx extends Renderer2D
 {
+    use GFXText;
     use Splices16Bits;
 
     protected ?Framebuffer $buffer = null;
@@ -56,6 +58,10 @@ class GLFWGfx extends Renderer2D
 
     public function useFramebuffer(Framebuffer $framebuffer): static
     {
+        if (! $this->supportsFramebuffer($framebuffer)) {
+            throw GlfwGfxException::unsupportedFramebuffer($framebuffer::class);
+        }
+
         $this->buffer = $framebuffer;
         $this->viewport_width = $framebuffer->viewportWidth();
         $this->viewport_height = $framebuffer->viewportHeight();
@@ -65,6 +71,11 @@ class GLFWGfx extends Renderer2D
         $this->content_scale_y = 1.0;
 
         return $this;
+    }
+
+    public function supportsFramebuffer(Framebuffer $framebuffer): bool
+    {
+        return $framebuffer instanceof GLFWOpenGLFramebuffer;
     }
 
     /**
@@ -106,7 +117,7 @@ class GLFWGfx extends Renderer2D
         $buffer = $this->requireBuffer();
 
         if (! method_exists($buffer, 'dump')) {
-            throw RendererException::framebufferNotAttached(static::class);
+            throw RenderingException::framebufferNotAttached(static::class);
         }
 
         return $buffer->dump();
@@ -362,59 +373,6 @@ class GLFWGfx extends Renderer2D
         return $this->drawTriangle($x0, $y0, $x1, $y1, $x2, $y2, $color);
     }
 
-    public function setCursor(int $x, int $y): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::setCursor (text TBD)');
-    }
-
-    public function setTextSize(int $s, ?int $y = null): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::setTextSize (text TBD)');
-    }
-
-    public function setTextColor(int $color, ?int $bg = null): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::setTextColor (text TBD)');
-    }
-
-    public function setTextWrap(bool $wrap): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::setTextWrap (text TBD)');
-    }
-
-    public function setCp437(bool $enable): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::setCp437 (text TBD)');
-    }
-
-    public function write(int $c): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::write (text TBD)');
-    }
-
-    public function drawChar(int $x, int $y, int $c, int $color, int $bg, int $size_x, int $size_y): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::drawChar (text TBD)');
-    }
-
-    public function print(string $str): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::print (text TBD)');
-    }
-
-    public function println(string $str = ''): static
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::println (text TBD)');
-    }
-
-    /**
-     * @return array{x1: int, y1: int, w: int, h: int}
-     */
-    public function getTextBounds(string $str, int $x, int $y): array
-    {
-        throw RendererException::framebufferNotAttached(static::class.'::getTextBounds (text TBD)');
-    }
-
     protected function applyClearColor(int $color): void
     {
         [$r, $g, $b, $a] = $this->unpackRgba($color);
@@ -424,7 +382,7 @@ class GLFWGfx extends Renderer2D
     protected function requireBuffer(): Framebuffer
     {
         if (is_null($this->buffer)) {
-            throw RendererException::framebufferNotAttached(static::class);
+            throw RenderingException::framebufferNotAttached(static::class);
         }
 
         return $this->buffer;
