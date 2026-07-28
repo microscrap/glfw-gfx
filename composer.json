@@ -3,7 +3,7 @@
     "description": "GLFW-native Rendering Package for the ScrapyardIO Framework",
     "license": "MIT",
     "homepage": "https://scrapyard-io.projectsaturnstudios.com",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "authors": [
         {
             "name": "Angel Gonzalez",

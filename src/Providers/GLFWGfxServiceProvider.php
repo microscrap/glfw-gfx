@@ -7,6 +7,7 @@ use Fabricate\Contracts\Framebuffers\BufferFactory as FramebufferFactory;
 use Fabricate\Framebuffers\FormatSpec;
 use Fabricate\NutsAndBolts\ServiceProvider;
 use Fabricate\Rendering\RenderManager;
+use Microscrap\GFX\GLFW\Console\InstallGlfwDisplayCommand;
 use Microscrap\GFX\GLFW\GLFWRenderDriver;
 use Microscrap\GFX\GLFW\GLFWOpenGLFramebuffer;
 
@@ -20,7 +21,11 @@ class GLFWGfxServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->program->singleton(InstallGlfwDisplayCommand::class);
+
+        $this->commands([
+            InstallGlfwDisplayCommand::class,
+        ]);
     }
 
     /**
