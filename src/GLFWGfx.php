@@ -140,6 +140,14 @@ class GLFWGfx extends Renderer2D
 
     public function fill(int $color): static
     {
+        $clip = $this->clip();
+
+        // Both paths below clear the whole surface and ignore the clip, so a
+        // clipped fill has to go through the rect path instead.
+        if (! is_null($clip)) {
+            return $this->fillRect($clip->x, $clip->y, $clip->width, $clip->height, $color);
+        }
+
         if ($this->buffer instanceof GLFWOpenGLFramebuffer) {
             $this->buffer->clear($color);
 
@@ -253,6 +261,16 @@ class GLFWGfx extends Renderer2D
 
     public function fillRect(int $x, int $y, int $w, int $h, int $color): static
     {
+        // Intersect the active clip ahead of the backend split, so a rejected
+        // fill reaches neither the offscreen grid nor the GL scissor.
+        $segment = $this->clipSegment($x, $y, $w, $h);
+
+        if (is_null($segment)) {
+            return $this;
+        }
+
+        [$x, $y, $w, $h] = [$segment->x, $segment->y, $segment->width, $segment->height];
+
         if ($this->buffer instanceof GLFWOpenGLFramebuffer) {
             $this->buffer->fillRectRaw($x, $y, $w, $h, $color);
 
@@ -260,10 +278,6 @@ class GLFWGfx extends Renderer2D
         }
 
         $this->requireNativeWindow();
-
-        if ($w <= 0 || $h <= 0) {
-            return $this;
-        }
 
         // Clip in logical (window-point) space — same coords as SDL/Adafruit.
         $left = max(0, $x);

@@ -9,6 +9,7 @@ use Fabricate\Contracts\Framebuffers\Enums\PixelFormat;
 use Fabricate\Contracts\Framebuffers\Enums\RenderType;
 use Fabricate\Contracts\Framebuffers\Framebuffer;
 use Fabricate\Contracts\Rendering\GFXRenderer;
+use Fabricate\Framebuffers\DataObjects\DamageGranularity;
 use Fabricate\Framebuffers\DataObjects\DumpedBuffer;
 use Fabricate\Framebuffers\FormatSpec;
 use Fabricate\NutsAndBolts\Concerns\Splices16Bits;
@@ -290,6 +291,23 @@ class GLFWOpenGLFramebuffer implements Framebuffer
     public function supportsRenderer(GFXRenderer $renderer): bool
     {
         return $renderer instanceof GLFWGfx;
+    }
+
+    /**
+     * Damage is not tracked, so any change costs the whole surface.
+     */
+    public function damageGranularity(): DamageGranularity
+    {
+        return DamageGranularity::wholeSurface($this->width, $this->height);
+    }
+
+    /**
+     * The shadow grid survives, but the on-screen GL backbuffer is undefined
+     * after a buffer swap, so callers must not rely on retained pixels.
+     */
+    public function preservesContentsOnPresent(): bool
+    {
+        return false;
     }
 
     protected function bindContext(): void
